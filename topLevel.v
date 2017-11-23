@@ -20,6 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 //TEST COMMENT
+//Test Comment 2
 
 module topLevel(Reset, Clk, PCResult, Mux_Mem2Reg_Out, HIreg_read, LOreg_read);
 
