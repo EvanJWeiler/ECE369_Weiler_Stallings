@@ -34,6 +34,11 @@ module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, rd_EX_MEM, rd_MEM_W
  
     reg [4:0] Rs_ID_EX, Rs_EX_MEM, Rs_MEM_WB;
     
+    initial begin
+        ForwardA <= 2'b00;
+        ForwardB <= 2'b00;
+    end
+    
     always@(*)
     begin
         ForwardA <= 2'b00;
@@ -71,41 +76,68 @@ module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, rd_EX_MEM, rd_MEM_W
             ForwardB <= 2'b00;
         end*/
         
-        if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_EX_MEM == rs) && (rd_MEM_WB == rt))
+        if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
         begin
             ForwardA <= 2'b10;
-            ForwardB <= 2'b01;
-        end
-        
-        else if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
-        begin
-            ForwardA <= 2'b10;
-            ForwardB <= 2'b00;
+            //ForwardB <= 2'b00;
         end
         
         else if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt))
         begin
             ForwardB <= 2'b10;
-            ForwardA <= 2'b00;
+            //ForwardA <= 2'b00;
         end
         
-        else if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rs) && (rd_MEM_WB == rs))
+       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rt))
+          begin
+             ForwardB <= 2'b01;
+             //ForwardA <= 2'b00;
+          end
+       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs))
+          begin
+             ForwardA <= 2'b01;
+          end
+        
+        if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rs) && (rd_MEM_WB == rs))
         begin
             ForwardA <= 2'b01;
-            ForwardB <= 2'b00;
+            //ForwardB <= 2'b00;
         end
         
-         else if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rt) && (rd_MEM_WB == rt))
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rt) && (rd_MEM_WB == rt))
          begin
-            ForwardA <= 2'b00;
+            //ForwardA <= 2'b00;
             ForwardB <= 2'b01;
          end
          
-         else
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB!= 5'd0) && (RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_MEM_WB == rs))
+         begin
+            ForwardA <= 2'b01;
+            ForwardB <= 2'b10;
+         end
+         
+         if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_EX_MEM == rs))
+         begin
+            ForwardA <= 2'b10;
+            ForwardB <= 2'b00;
+         end
+            
+         if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rs == 5'd0))//sll line in case 3
+         begin
+            ForwardB <= 2'b10;
+         end
+         
+            if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
+              begin
+                  ForwardA <= 2'b10;
+                  //ForwardB <= 2'b00;
+              end
+         
+         /*else
          begin
             ForwardA <= 2'b00;
             ForwardB <= 2'b00;
-         end
+         end*/
             
            
          
