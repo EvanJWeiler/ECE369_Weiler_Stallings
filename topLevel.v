@@ -41,7 +41,7 @@ module topLevel(Reset, Clk, PCResult, Mux_Mem2Reg_Out, HIreg_read, LOreg_read);
 	wire [4:0] Instruction_20_16_ID_EX, Instruction_15_11_ID_EX, Instruction_25_21_ID_EX;
 	wire [25:0] Instruction_25_0_ID_EX;
 
-    wire [25:0] JumpTargetAddress;
+    wire [31:0] JumpTargetAddress;
 	wire Zero_aluout;
 	wire [4:0] MUX1_regdst, MUX2_regdst;
 	wire [31:0] MUX2_ALUB, SL2_SHIFTED, AdderResult_out, ALU_RESULT_aluout, HIreg_write, LOreg_write;
@@ -72,7 +72,7 @@ module topLevel(Reset, Clk, PCResult, Mux_Mem2Reg_Out, HIreg_read, LOreg_read);
     IF_IDPipelineRegister IF_ID_1(PCAddResult, Instruction_IM, Clk, OutputAddress_IF_ID, Instruction_IF_ID, IF_ID_En, IF_ID_Flush);
 	// IF/ID PIPELINE REGISTER
 	
-	HazardUnit HU_1(Instruction_IF_ID, Instruction_20_16_ID_EX, MemRead_ID_EX, MemRead_EX_MEM, PCSrc, HU_PCWrite, IF_ID_En, IF_ID_Flush, ID_EX_Flush, CheckSignal);
+	HazardUnit HU_1(Instruction_IF_ID, Instruction_20_16_ID_EX, MemRead_ID_EX, MemRead_EX_MEM, Jump_ID_EX, Jump_EX_MEM, PCSrc, HU_PCWrite, IF_ID_En, IF_ID_Flush, ID_EX_Flush, CheckSignal);
 	Mux1Bit2To1 MUX_RF(RegWrite_MuxOut, RegWrite_MEM_WB, 1'b0, PCSrc);
 	RegisterFile RF_1(Instruction_IF_ID[25:21], Instruction_IF_ID[20:16], MUX2_regdst_MEM_WB, Mux_Mem2Reg_Out, RegWrite_MuxOut, Clk, ReadData1_rf, ReadData2_rf);
 	SignExtension SE_1(Instruction_IF_ID[15:0], SE_1_Output);

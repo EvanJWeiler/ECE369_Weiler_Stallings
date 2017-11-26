@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, PCAdd_Mux_AddOrBranch, PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal);
+module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, PCAdd_Mux_AddOrBranch, PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal);
 
     input[31:0] Instruction;
     input[4:0] ID_EX_RTreg;
-    input ID_EX_MemRead, EX_MEM_MemRead, PCAdd_Mux_AddOrBranch;
+    input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, PCAdd_Mux_AddOrBranch;
     output reg PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal;
     
     initial begin
@@ -66,6 +66,24 @@ module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, PCAdd
         begin
             IF_ID_Flush <= 1'b1;
             ID_EX_Flush <= 1'b1;
+        end
+        
+        if(ID_EX_Jump == 1'b1)//second stall for jump
+        begin
+            CheckSignal <= 1'b1;
+            IF_ID_Write <= 1'b0;
+            PCWrite <= 1'b0;
+            IF_ID_Flush <= 1'b1;
+            ID_EX_Flush <= 1'b1;
+        end
+        
+        if(EX_MEM_Jump == 1'b1)
+        begin
+            //CheckSignal <= 1'b1;
+            //IF_ID_Write <= 1'b0;
+            //PCWrite <= 1'b0;
+           IF_ID_Flush <= 1'b1;
+           ID_EX_Flush <= 1'b1;
         end
     end
     
