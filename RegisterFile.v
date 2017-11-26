@@ -69,7 +69,7 @@ module RegisterFile(ReadRegister1, ReadRegister2, WriteRegister, WriteData, RegW
     
     end
         
-	always@(negedge Clk)
+	always@(posedge Clk)
 	begin
 	  
 	   if(RegWrite == 1'b1)

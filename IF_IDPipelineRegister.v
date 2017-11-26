@@ -24,11 +24,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-module IF_IDPipelineRegister(NewPCAddress, Instruction, Clk, outputAddress, outputInstruction, En, Flush);
+module IF_IDPipelineRegister(NewPCAddress, Instruction, Clk, outputAddress, outputInstruction, En);
 
 	input [31:0] NewPCAddress;
 	input [31:0] Instruction;
-	input Clk, En, Flush;
+	input Clk, En;
 	
 	(* dont_touch = "true" *) reg [31:0] currentInstruction, currentAddress;
 
@@ -50,31 +50,22 @@ module IF_IDPipelineRegister(NewPCAddress, Instruction, Clk, outputAddress, outp
 	
 	always@(negedge Clk)
         begin
-            
-            currentAddress <= currentAddress;
-            currentInstruction <= currentInstruction;
             if(En == 1'b1)
             begin
                 currentAddress <= NewPCAddress;
                 currentInstruction <= Instruction;
             end
-            if(Flush == 1'b1)
-            begin
-                currentAddress <= 32'd0;
-                currentInstruction <= 32'd0;
-            end
-            /*else
+            else
             begin
                 currentAddress <= currentAddress;
                 currentInstruction <= currentInstruction;
-            end*/
+            end
         end
         
         always@(posedge Clk)
         begin
             outputAddress <= currentAddress;
             outputInstruction <= currentInstruction;
-        
         end
 	
 	

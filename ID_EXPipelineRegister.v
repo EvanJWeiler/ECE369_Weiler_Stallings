@@ -42,9 +42,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-module ID_EXPipelineRegister(Flush, RegWriteIn, MemtoRegIn, BranchIn, MemReadIn, MemWriteIn, RegDstIn, ALUOpIn, ALUSrcIn, DataMemChoiceIn, RegisterLoadChoiceIn, JumpIn, JalIn, JrIn, AddressIn, SignExtendImmediateIn, ReadData1In, ReadData2In, JumpTargetAddressIn, rsIn, rtIn, rdIn, Clk, RegWriteOut, MemtoRegOut, BranchOut, MemReadOut, MemWriteOut, RegDstOut, ALUOpOut, ALUSrcOut, DataMemChoiceOut, RegisterLoadChoiceOut, JumpOut, JalOut, JrOut, AddressOut, SignExtendImmediateOut, ReadData1Out, ReadData2Out, JumpTargetAddressOut, rsOut, rtOut, rdOut);
+module ID_EXPipelineRegister(RegWriteIn, MemtoRegIn, BranchIn, MemReadIn, MemWriteIn, RegDstIn, ALUOpIn, ALUSrcIn, DataMemChoiceIn, RegisterLoadChoiceIn, JumpIn, JalIn, JrIn, AddressIn, SignExtendImmediateIn, ReadData1In, ReadData2In, JumpTargetAddressIn, rsIn, rtIn, rdIn, Clk, RegWriteOut, MemtoRegOut, BranchOut, MemReadOut, MemWriteOut, RegDstOut, ALUOpOut, ALUSrcOut, DataMemChoiceOut, RegisterLoadChoiceOut, JumpOut, JalOut, JrOut, AddressOut, SignExtendImmediateOut, ReadData1Out, ReadData2Out, JumpTargetAddressOut, rsOut, rtOut, rdOut);
 
-	input Flush, RegWriteIn, MemtoRegIn, BranchIn, MemReadIn, MemWriteIn, RegDstIn, ALUSrcIn, JumpIn, JalIn, JrIn; //all 1-bit control values
+	input RegWriteIn, MemtoRegIn, BranchIn, MemReadIn, MemWriteIn, RegDstIn, ALUSrcIn, JumpIn, JalIn, JrIn; //all 1-bit control values
 	input [10:0] ALUOpIn;
 	input [4:0] rtIn, rdIn, rsIn;
 	input [31:0] SignExtendImmediateIn, AddressIn, ReadData1In, ReadData2In;
@@ -68,34 +68,8 @@ module ID_EXPipelineRegister(Flush, RegWriteIn, MemtoRegIn, BranchIn, MemReadIn,
 
 
     /* Please fill in the implementation here... */
-	always@(/*negedge Clk*/ *)
+	always@(negedge Clk)
 	begin
-	   if(Flush == 1'b1)
-	   begin
-	   CurrentRegWrite <= 1'b0;
-       CurrentMemtoReg <= 1'b0;
-       CurrentBranch <= 1'b0;
-       CurrentMemRead <= 1'b0;
-       CurrentMemWrite <= 1'b0;
-       CurrentRegDst <= 1'b0;
-       CurrentALUSrc <= 1'b0;
-       CurrentDataMemChoice <= 2'b00;
-       CurrentRegisterLoadChoice <= 2'b0;
-       CurrentALUOp <= 11'd0;
-       CurrentRt <= 5'd0;
-       CurrentRd <= 5'd0;
-       CurrentRs <= 5'd0;
-       CurrentSignExtendImmediate <= 32'd0;
-       CurrentAddress <= 32'd0;
-       CurrentReadData1 <= 5'd0;
-       CurrentReadData2 <= 5'd0;
-       CurrentJumpTargetAddress <= 26'd0;
-       CurrentJump <= 1'b0;
-       CurrentJal <= 1'b0;
-       CurrentJr <= 1'b0;
-       end
-       else
-       begin
 		CurrentRegWrite <= RegWriteIn;
 		CurrentMemtoReg <= MemtoRegIn;
 		CurrentBranch <= BranchIn;
@@ -117,7 +91,6 @@ module ID_EXPipelineRegister(Flush, RegWriteIn, MemtoRegIn, BranchIn, MemReadIn,
 		CurrentJump <= JumpIn;
 		CurrentJal <= JalIn;
 		CurrentJr <= JrIn;
-     end
 	
 	end
 
