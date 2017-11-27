@@ -25,10 +25,10 @@
 //rd_EX_MEM comes in after the EX_MEM pipeline register
 //rd_MEM_WB comes in after the MEM_WB pipeline register
 //Mem2Reg comes in after the final mux
-module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, rd_EX_MEM, rd_MEM_WB, ForwardA, ForwardB, Clk);
+module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, ALUSrc_ID_EX, rd_EX_MEM, rd_MEM_WB, ForwardA, ForwardB, Clk);
 
     input [4:0] rs, rt, rd_EX_MEM, rd_MEM_WB;
-    input RegWrite_EX_MEM, RegWrite_MEM_WB, Clk;
+    input RegWrite_EX_MEM, RegWrite_MEM_WB, ALUSrc_ID_EX, Clk;
     
     output reg[1:0] ForwardA, ForwardB;
  
@@ -76,47 +76,53 @@ module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, rd_EX_MEM, rd_MEM_W
             ForwardB <= 2'b00;
         end*/
         
-        if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
+        if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs)) // general case, rs is equal to the rd from one instruction back
         begin
             ForwardA <= 2'b10;
             //ForwardB <= 2'b00;
         end
         
-        else if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt))
+        else if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt)) // general case, rt is equal to the rd from one instruction back
         begin
             ForwardB <= 2'b10;
             //ForwardA <= 2'b00;
         end
         
-       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rt))
+       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rt)) // general case, rt is equal to rd from two instructions back
           begin
              ForwardB <= 2'b01;
              //ForwardA <= 2'b00;
           end
-       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs))
+       
+       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs)) // general case, rs is equal to rd from two instructions back
           begin
              ForwardA <= 2'b01;
           end
         
-        if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rs) && (rd_MEM_WB == rs))
+        if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rs) && (rd_MEM_WB == rs)) //cause daddy Akoglu told us to
         begin
             ForwardA <= 2'b01;
             //ForwardB <= 2'b00;
         end
         
-         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rt) && (rd_MEM_WB == rt))
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rt) && (rd_MEM_WB == rt)) //cause daddy Akoglu told us to
          begin
             //ForwardA <= 2'b00;
             ForwardB <= 2'b01;
          end
          
-         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB!= 5'd0) && (RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_MEM_WB == rs))
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs) && ALUSrc_ID_EX == 1'b1)//this is specifically for a load word instruction that was stalled, that is then followed by an instruction requiring an immediate value
+         begin
+            ForwardB <= 2'b00;
+         end
+         
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB!= 5'd0) && (RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_MEM_WB == rs)) // case where rs is equal to rd from two instructions back and rt is equal to rd from one instruction back
          begin
             ForwardA <= 2'b01;
             ForwardB <= 2'b10;
          end
          
-         if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_EX_MEM == rs))
+         if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt) && (rd_EX_MEM == rs)) //case where rs and rt are both equal to rd from one instruction back
          begin
             ForwardA <= 2'b10;
             ForwardB <= 2'b00;

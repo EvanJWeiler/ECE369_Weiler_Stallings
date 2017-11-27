@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, ID_EX_Branch, ID_EX_Zero, PCAdd_Mux_AddOrBranch, PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal);
+module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, ID_EX_Jr, EX_MEM_Jr, ID_EX_Branch, ID_EX_Zero, PCAdd_Mux_AddOrBranch, PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal);
 
     input[31:0] Instruction;
     input[4:0] ID_EX_RTreg;
-    input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, ID_EX_Branch, ID_EX_Zero, PCAdd_Mux_AddOrBranch;
+    input ID_EX_MemRead, EX_MEM_MemRead, ID_EX_Jump, EX_MEM_Jump, ID_EX_Jr, EX_MEM_Jr, ID_EX_Branch, ID_EX_Zero, PCAdd_Mux_AddOrBranch;
     output reg PCWrite, IF_ID_Write, IF_ID_Flush, ID_EX_Flush, CheckSignal;
     
     initial begin
@@ -75,8 +75,8 @@ module HazardUnit(Instruction, ID_EX_RTreg, ID_EX_MemRead, EX_MEM_MemRead, ID_EX
             PCWrite <= 1'b0;
             IF_ID_Flush <= 1'b1;
             ID_EX_Flush <= 1'b1;
-        end*/
-        if(Instruction[31:26] == 6'b000010 || ID_EX_Jump == 1'b1 || EX_MEM_Jump == 1'b1)//unconditional jump will flush datapath 3 times
+        end*/      //j                                   jal                                                      jr
+        if(Instruction[31:26] == 6'b000010 || Instruction[31:26] == 6'b000011 || (Instruction[31:26] == 6'b000000 && Instruction[5:0] == 6'b001000) || ID_EX_Jump == 1'b1 || EX_MEM_Jump == 1'b1 || ID_EX_Jr == 1'b1 || EX_MEM_Jr == 1'b1)//unconditional jump will flush datapath 3 times
         begin
             IF_ID_Flush <= 1'b1;
         end

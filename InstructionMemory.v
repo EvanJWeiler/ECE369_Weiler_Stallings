@@ -46,7 +46,10 @@ module InstructionMemory(Address, Instruction);
     
     /* Please fill in the implementation here */
 	initial begin
-	
+	//$readmemh ("vbsme_small_stripped.mem", memory);
+	//$readmemh ("vbsme_1_stripped.mem", memory);
+	//$readmemh ("test5_stripped.mem", memory);
+	//$readmemh ("test4_stripped.mem", memory);
 	$readmemh ("Instruction_memory.mem", memory);
 	//begin forwarding testing
 	 /* memory[0] = 32'b00100000000100000000000000000001; //	main:	addi	$s0, $zero, 1 (s0 = 1)

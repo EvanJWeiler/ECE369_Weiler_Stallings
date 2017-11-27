@@ -409,19 +409,12 @@ module ALU32Bit(ALUControl, A, B, ALUResult, Zero, HIreg_read, LOreg_read, HIreg
 			
 			6'b011010: //addi CHECKED
 			begin
-				tempResult = {16'd0, B[15:0]};
-				if(tempResult + A == 32'd65536)
-				begin
-				    ALUResult = 32'd0;
-				end
-				else if(tempResult + A == 32'h0000ffff)
-				begin
-				    ALUResult = -32'd1;
-				end
-				else
-				begin
-				    ALUResult = tempResult + A;
-				end
+			
+				//tempResult = {16'd0, B[15:0]};
+				tempResult = B;
+			
+				ALUResult = tempResult + A;
+				
 				
 				Zero <= 1'b0;
 				HIreg_write <= HIreg_read;

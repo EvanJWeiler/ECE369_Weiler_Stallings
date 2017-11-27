@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Percent Effort: Evan Weiler: 50%, David Stallings: 50%
-// 
-// 
+// This is a 5-stage pipeline
+// All branches are resolved in the memory phase
 // Create Date: 10/16/2017 07:41:58 PM
 // Design Name: 
 // Module Name: topLevel
@@ -72,7 +72,7 @@ module topLevel(Reset, Clk, PCResult, Mux_Mem2Reg_Out, HIreg_read, LOreg_read);
     IF_IDPipelineRegister IF_ID_1(PCAddResult, Instruction_IM, Clk, OutputAddress_IF_ID, Instruction_IF_ID, IF_ID_En, IF_ID_Flush);
 	// IF/ID PIPELINE REGISTER
 	
-	HazardUnit HU_1(Instruction_IF_ID, Instruction_20_16_ID_EX, MemRead_ID_EX, MemRead_EX_MEM, Jump_ID_EX, Jump_EX_MEM, Branch_ID_EX, Zero_aluout, PCSrc, HU_PCWrite, IF_ID_En, IF_ID_Flush, ID_EX_Flush, CheckSignal);
+	HazardUnit HU_1(Instruction_IF_ID, Instruction_20_16_ID_EX, MemRead_ID_EX, MemRead_EX_MEM, Jump_ID_EX, Jump_EX_MEM, Jr_ID_EX, Jr_EX_MEM, Branch_ID_EX, Zero_aluout, PCSrc, HU_PCWrite, IF_ID_En, IF_ID_Flush, ID_EX_Flush, CheckSignal);
 	//Mux1Bit2To1 MUX_RF(RegWrite_MuxOut, RegWrite_MEM_WB, 1'b0, PCSrc);
 	RegisterFile RF_1(Instruction_IF_ID[25:21], Instruction_IF_ID[20:16], MUX2_regdst_MEM_WB, Mux_Mem2Reg_Out, /*RegWrite_MuxOut,*/ RegWrite_MEM_WB, Clk, ReadData1_rf, ReadData2_rf);
 	SignExtension SE_1(Instruction_IF_ID[15:0], SE_1_Output);
@@ -97,7 +97,7 @@ module topLevel(Reset, Clk, PCResult, Mux_Mem2Reg_Out, HIreg_read, LOreg_read);
 	Register Hi_reg(HIreg_read, HIreg_write, Clk);
 	Register Lo_reg(LOreg_read, LOreg_write, Clk);
 	
-	ForwardUnit FU(Instruction_25_21_ID_EX, Instruction_20_16_ID_EX, RegWrite_EX_MEM, RegWrite_MEM_WB, MUX2_regdst_EX_MEM, MUX2_regdst_MEM_WB, ForwardA, ForwardB, Clk);
+	ForwardUnit FU(Instruction_25_21_ID_EX, Instruction_20_16_ID_EX, RegWrite_EX_MEM, RegWrite_MEM_WB, ALUSrc_ID_EX, MUX2_regdst_EX_MEM, MUX2_regdst_MEM_WB, ForwardA, ForwardB, Clk);
     
 	// EX/MEM PIPELINE REGISTER
 	EX_MEMPipelineRegister EX_MEM_1(RegWrite_ID_EX, Mem2Reg_ID_EX, Branch_ID_EX, MemRead_ID_EX, MemWrite_ID_EX, DataMemChoice_ID_EX, RegisterLoadChoice_ID_EX, Jump_ID_EX, Jr_ID_EX, ReadData2_ID_EX, JumpTargetAddress, AdderResult_out, Zero_aluout, ALU_RESULT_aluout, MUX2_regdst, Clk, RegWrite_EX_MEM, Mem2Reg_EX_MEM, Branch_EX_MEM, MemRead_EX_MEM, MemWrite_EX_MEM, DataMemChoice_EX_MEM, RegisterLoadChoice_EX_MEM, Jump_EX_MEM, Jr_EX_MEM, ReadData2_EX_MEM, JumpTargetAddress_EX_MEM, AdderResult_EX_MEM, Zero_EX_MEM, ALU_RESULT_EX_MEM, MUX2_regdst_EX_MEM);
