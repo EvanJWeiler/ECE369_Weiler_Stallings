@@ -76,28 +76,28 @@ module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, ALUSrc_ID_EX, rd_EX
             ForwardB <= 2'b00;
         end*/
         
+         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rt)) // general case, rt is equal to rd from two instructions back
+         begin
+            ForwardB <= 2'b01;
+            //ForwardA <= 2'b00;
+         end
+      
+      if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs)) // general case, rs is equal to rd from two instructions back
+         begin
+            ForwardA <= 2'b01;
+         end
+        
         if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs)) // general case, rs is equal to the rd from one instruction back
         begin
             ForwardA <= 2'b10;
             //ForwardB <= 2'b00;
         end
         
-        else if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt)) // general case, rt is equal to the rd from one instruction back
+        if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rt)) // general case, rt is equal to the rd from one instruction back
         begin
             ForwardB <= 2'b10;
             //ForwardA <= 2'b00;
         end
-        
-       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rt)) // general case, rt is equal to rd from two instructions back
-          begin
-             ForwardB <= 2'b01;
-             //ForwardA <= 2'b00;
-          end
-       
-       if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && (rd_MEM_WB == rs)) // general case, rs is equal to rd from two instructions back
-          begin
-             ForwardA <= 2'b01;
-          end
         
         if((RegWrite_MEM_WB == 1'd1) && (rd_MEM_WB != 5'd0) && !((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0)) && (rd_EX_MEM == rs) && (rd_MEM_WB == rs)) //cause daddy Akoglu told us to
         begin
@@ -133,11 +133,22 @@ module ForwardUnit(rs, rt, RegWrite_EX_MEM, RegWrite_MEM_WB, ALUSrc_ID_EX, rd_EX
             ForwardB <= 2'b10;
          end
          
-            if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
-              begin
-                  ForwardA <= 2'b10;
+         if(RegWrite_MEM_WB == 1'd1 && rd_MEM_WB != 5'd0 && rd_MEM_WB == rt && rd_MEM_WB == rs)//case if rd from writeback phase equals both rt and rs
+         begin
+            ForwardA <= 2'b01;
+            ForwardB <= 2'b01;
+         end
+         
+         if(RegWrite_EX_MEM == 1'd1 && rd_EX_MEM != 5'd0 && rd_EX_MEM == rt && rd_EX_MEM == rs)//case if rd from memory phase equals both rt and rs
+         begin
+            ForwardA <= 2'b10;
+            ForwardB <= 2'b10;
+         end
+            //if((RegWrite_EX_MEM == 1'd1) && (rd_EX_MEM != 5'd0) && (rd_EX_MEM == rs))
+              //begin
+                //  ForwardA <= 2'b10;
                   //ForwardB <= 2'b00;
-              end
+              //end
          
          /*else
          begin
